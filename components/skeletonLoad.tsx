@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, StyleSheet, View, ViewStyle } from "react-native";
 import { useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
-function PulsingCard({ style }: { style?: any }) {
+function PulsingCard({ style }: { style?: ViewStyle }) {
   const theme = useTheme();
   const opacity = useRef(new Animated.Value(0.3)).current;
 
@@ -45,37 +45,48 @@ function PulsingCard({ style }: { style?: any }) {
   );
 }
 
-export default function SkeletonLoad() {
+export default function SkeletonLoad({
+  layout = [1],
+  containerStyle,
+  rowGap = wp("2%"),
+  blockGap = wp("4%"),
+  cardHeight = wp("40%"),
+  cardRadius = wp("4%"),
+}: {
+  layout?: number[];
+  containerStyle?: ViewStyle;
+  rowGap?: number;
+  blockGap?: number;
+  cardHeight?: number;
+  cardRadius?: number;
+}) {
   const theme = useTheme();
+
   return (
     <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[
+        {
+          gap: blockGap,
+          backgroundColor: theme.colors.background,
+        },
+        containerStyle,
+      ]}
     >
-      <View style={styles.row}>
-        <PulsingCard style={{ flex: 1 }} />
-      </View>
-
-      <View style={styles.row}>
-        <PulsingCard style={{ flex: 1 }} />
-        <PulsingCard style={{ flex: 1 }} />
-      </View>
-
-      <View style={styles.row}>
-        <PulsingCard style={{ flex: 1 }} />
-        <PulsingCard style={{ flex: 1 }} />
-      </View>
+      {layout.map((count, r) => (
+        <View key={r} style={{ flexDirection: "row", gap: rowGap }}>
+          {Array.from({ length: count }).map((_, i) => (
+            <PulsingCard
+              key={`${r}-${i}`}
+              style={{ flex: 1, height: cardHeight, borderRadius: cardRadius }}
+            />
+          ))}
+        </View>
+      ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    gap: wp("4%"),
-  },
-  row: {
-    flexDirection: "row",
-    gap: wp("2%"),
-  },
   card: {
     height: wp("40%"),
     borderRadius: wp("4%"),
