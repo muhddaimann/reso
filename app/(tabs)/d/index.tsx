@@ -1,12 +1,12 @@
 import UserCard from "@/components/d/userCard";
 import LogoutFAB from "@/components/logoutFAB";
 import TopFAB from "@/components/topFAB";
+import { APP_NAME, APP_VERSION } from "@/constants/env";
 import { useTabVisibility } from "@/contexts/bottomContext";
-import { useToggle } from "@/contexts/themeContext";
 import { useScrollDirection } from "@/hooks/useBottomNav";
 import React, { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
-import { List, Switch, useTheme } from "react-native-paper";
+import { List, useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function Settings() {
@@ -16,7 +16,6 @@ export default function Settings() {
   const { direction, onScroll } = useScrollDirection();
   const [showFab, setShowTopFab] = useState(false);
   const [showLogoutFab, setShowLogoutFab] = useState(true);
-  const { isDarkMode, toggleTheme } = useToggle();
 
   useEffect(() => {
     if (direction === "down") {
@@ -57,49 +56,23 @@ export default function Settings() {
               fontWeight: "600",
             }}
           >
-            Appearance
+            About
           </List.Subheader>
-          <List.Item
-            title="Dark Mode"
-            left={(props) => <List.Icon {...props} icon="weather-night" />}
-            right={() => (
-              <Switch
-                value={isDarkMode}
-                onValueChange={toggleTheme}
-                trackColor={{
-                  false: theme.colors.surfaceVariant,
-                  true: theme.colors.primary,
-                }}
-              />
-            )}
-          />
-        </List.Section>
 
-        <List.Section>
-          <List.Subheader
-            style={{
-              color: theme.colors.onSurface,
-              fontSize: wp("4.5%"),
-              fontWeight: "600",
-            }}
-          >
-            Notifications
-          </List.Subheader>
           <List.Item
-            title="Push Notifications"
-            left={(props) => <List.Icon {...props} icon="bell-outline" />}
-            right={() => <Switch value={true} onValueChange={() => {}} />}
+            title="App"
+            description={APP_NAME}
+            left={(props) => <List.Icon {...props} icon="apps" />}
           />
           <List.Item
-            title="Email Notifications"
-            left={(props) => <List.Icon {...props} icon="email-outline" />}
-            right={() => <Switch value={false} onValueChange={() => {}} />}
+            title="Version"
+            description={APP_VERSION}
+            left={(props) => <List.Icon {...props} icon="tag-outline" />}
           />
         </List.Section>
       </ScrollView>
 
       <TopFAB visible={showFab} scrollRef={scrollRef} />
-
       <LogoutFAB visible={showLogoutFab} />
     </>
   );
