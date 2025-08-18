@@ -1,6 +1,6 @@
 import { useTabVisibility } from "@/contexts/bottomContext";
 import { useEffect, useRef } from "react";
-import { Animated, Easing, Platform, View } from "react-native";
+import { Animated, Easing, Platform, Pressable } from "react-native";
 import { useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
@@ -41,26 +41,34 @@ function TabItem({ route, navigation, descriptors, isFocused }: any) {
   };
 
   return (
-    <View key={route.key} style={{ alignItems: "center" }} onTouchEnd={onPress}>
+    <Pressable
+      key={route.key}
+      onPress={onPress}
+      style={{
+        width: "45%",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {Icon &&
         Icon({
           color: isFocused ? theme.colors.primary : theme.colors.outline,
-          size: wp("10%"),
+          size: wp("9%"),
         })}
       <Animated.Text
         style={{
-          fontSize: wp("3%"),
+          fontSize: wp("3.2%"),
           fontWeight: "500",
           color: theme.colors.primary,
           opacity: labelOpacity,
           transform: [{ translateY: labelTranslate }],
-          marginTop: wp("1%"),
+          marginTop: wp("0.8%"),
         }}
         numberOfLines={1}
       >
         {label}
       </Animated.Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -92,16 +100,17 @@ export default function AnimatedTabBar({
         right: 0,
         bottom: 0,
         backgroundColor: theme.colors.surface,
-        height: wp("22%"),
+        height: wp("18%"),
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "space-evenly",
         alignItems: "center",
-        paddingTop: Platform.OS === "android" ? wp("4%") : wp("2%"),
-        paddingBottom: wp("8%"),
+        paddingTop: Platform.OS === "android" ? wp("3%") : wp("2%"),
+        paddingBottom: wp("6%"),
+        paddingHorizontal: wp("6%"),
         zIndex: 100,
       }}
     >
-      {state.routes.map((route: any, index: number) => (
+      {state.routes.slice(0, 2).map((route: any, index: number) => (
         <TabItem
           key={route.key}
           route={route}

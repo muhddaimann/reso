@@ -1,3 +1,4 @@
+import NewFAB from "@/components/a/newFAB";
 import UserCard from "@/components/a/userCard";
 import SkeletonLoad from "@/components/skeletonLoad";
 import TopFAB from "@/components/topFAB";
@@ -24,6 +25,8 @@ export default function Home() {
   const scrollRef = useRef<ScrollView>(null);
   const [showFab, setShowFab] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showNewFab] = useState(true);
+  const [isNewFabExtended, setIsNewFabExtended] = useState(true);
 
   useEffect(() => {
     if (direction === "down") setHideTabBar(true);
@@ -48,6 +51,7 @@ export default function Home() {
   const handleScroll = (event: any) => {
     const scrollY = event.nativeEvent.contentOffset.y;
     setShowFab(scrollY > wp("25%"));
+    setIsNewFabExtended(scrollY < 10);
   };
 
   return (
@@ -93,6 +97,13 @@ export default function Home() {
       </ScrollView>
 
       <TopFAB visible={showFab} scrollRef={scrollRef} />
+      <NewFAB
+        visible={showNewFab}
+        extended={isNewFabExtended}
+        onPress={() => {
+          showToast({ message: "New session started!", type: "success" });
+        }}
+      />
     </>
   );
 }

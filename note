@@ -1,4 +1,4 @@
-template/
+reso/
 ├─ app/
 │  ├─ (tabs)/
 │  │  ├─ a/
@@ -53,4 +53,81 @@ template/
 ├─ hooks/
 │  ├─ useBottomNav.tsx
 │  └─ useToast.tsx
+
+Reso
+├─ PRD
+│ ├─ Overview
+│ │ ├─ One-liner: Reso guides intrusive thoughts into a 3-minute, private, structured session.
+│ │ ├─ Problem: Spirals → rumination
+│ │ ├─ Users & JTBD: Overthinkers. “When spiraling, help me reframe fast so I feel calmer.”
+│ │ └─ Value: Short, frictionless reframing
+│ ├─ Success Metrics
+│ │ ├─ North Star: % users completing ≥1 guided session/day.
+│ │ └─ Guardrails: Completion ≥70%, median session 1–4 min, D7 ≥25%, crash-free ≥99.5%, MobSF High=0.
+│ ├─ Scope
+│ │ ├─ In: Guided framework (10 prompts), Accept/Fight branch, tags, mood before/after, summary, history, autosave/restore, local-only, system theme.
+│ │ └─ Out: Accounts/sync, AI assist, exports, reminders (later).
+│ ├─ User Flows
+│ │ ├─ Home → Start → Q1–Q10 (branch at step 8) → Summary → Save.
+│ │ ├─ Home → History → Detail → Delete.
+│ │ ├─ Resume draft on reopen.
+│ │ └─ Search by tag/text.
+│ ├─ Functional Requirements
+│ │ ├─ Progress indicator
+│ │ ├─ Tag (preset/custom)
+│ │ └─ Summary: next step + quote.
+│ ├─ Non-Functional
+│ │ ├─ Offline-first
+│ │ ├─ Accessibility (dynamic type, screen reader labels).
+│ │ └─ Privacy: local SQLite only
+│ ├─ Data Model (SQLite)
+│ │ ├─ sessions(id, created_at, updated_at, tag, path('accept'|'fight'), mood_before, mood_after, summary)
+│ │ └─ session_answers(id, session_id FK, step 1..10, question, answer)
+│ ├─ UX & Content
+│ │ ├─ Tone: brief, non-judgmental.
+│ │ └─ Copy: 1–2 short sentences per prompt, subtle haptics on step/save.
+│ ├─ Risks & Assumptions
+│ │ ├─ Risk: flow fatigue → keep under 3 min, show progress, allow skip.
+│ │ └─ Assumption: brief guided writing reduces rumination.
+│ ├─ Release Criteria
+│ │ ├─ No dead ends
+│ │ └─ MobSF High=0
+│ ├─ QA Checklist
+│ ├─ Start/complete both paths
+│ ├─ History CRUD
+│ ├─ Theme follows system
+│ └─ No network requests in v0.x.
+├─ SLC
+│ ├─ v0.1 — Core Flow
+│ │ ├─ Goals: Ship guided session end-to-end with history
+│ │ ├─ Screens: Home, Session (stepper), Summary, History(list/detail), About.
+│ │ ├─ Data: SQLite schema + DAO
+│ │ ├─ Acceptance: Complete both paths
+│ │ └─ Done When: Crash-free ≥99.5%, cold start <1s, MobSF High=0.
+│ ├─ v0.2 — Momentum
+│ │ ├─ Features: Local reminders
+│ │ ├─ Acceptance: Schedule/cancel reminder
+│ │ └─ Done When: Reminder fires reliably offline
+│ ├─ v0.3 — Safety & Share
+│ │ ├─ Features: App lock (PIN/biometric)
+│ │ ├─ Acceptance: Lock on reopen
+│ │ └─ Done When: Lock latency <1s
+│ ├─ v0.4 — Insight
+│ │ ├─ Features: Weekly summary (counts, top tags, mood delta), lightweight streaks.
+│ │ ├─ Acceptance: Summary card accurate
+│ │ └─ Done When: Calculations verified on sample data
+│ └─ v1.0 — Assist & Sync (optional)
+│ ├─ Features: AI suggestions (opt-in)
+│ ├─ Acceptance: Data never sent without consent
+│ └─ Done When: Sync conflict-free
+├─ Engineering
+│ ├─ Stack: Expo RN (Router, Paper, Reanimated, Haptics), SQLite
+│ ├─ Releases: version in app.config.ts
+│ ├─ Security & MobSF: HTTPS none (no network v0.x)
+│ └─ Accessibility: Labels, focus order, contrast AA, dynamic type.
+└─ Appendix
+├─ Prompt Copy (Accept/Fight)
+├─ Tag Presets (e.g., relationship, career, family, health, finance, self-esteem)
+└─ About/Privacy Copy (“All data is stored locally on your device. No cloud sync.”)
+
 
