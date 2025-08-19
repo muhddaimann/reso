@@ -1,8 +1,17 @@
+import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { useTheme } from "react-native-paper";
+import { IconButton, Text, useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
-export default function UserCard() {
+type UserCardProps = {
+  showBack?: boolean;
+  title?: string;
+};
+
+export default function UserCard({
+  showBack = false,
+  title = "",
+}: UserCardProps) {
   const theme = useTheme();
 
   return (
@@ -15,7 +24,27 @@ export default function UserCard() {
         },
       ]}
     >
-      <View style={styles.row}></View>
+      <View style={styles.row}>
+        {showBack ? (
+          <IconButton
+            icon="chevron-left"
+            size={wp("7%")}
+            onPress={() => router.back()}
+            accessibilityLabel="Go back"
+          />
+        ) : (
+          <View style={{ width: wp("12%") }} />
+        )}
+
+        <View style={styles.right}>
+          <Text
+            numberOfLines={1}
+            style={[styles.title, { color: theme.colors.onSurface }]}
+          >
+            {title}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -23,10 +52,8 @@ export default function UserCard() {
 const styles = StyleSheet.create({
   card: {
     width: "100%",
-    height: wp("25%"),
     borderBottomLeftRadius: wp("4%"),
     borderBottomRightRadius: wp("4%"),
-    marginBottom: wp("3%"),
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
@@ -35,6 +62,17 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: wp("4%"),
+    paddingHorizontal: wp("2%"),
+    gap: wp("2%"),
+  },
+  right: {
+    flex: 1,
+    alignItems: "flex-end",
+    paddingRight: wp("4%"),
+  },
+  title: {
+    fontSize: wp("4.2%"),
+    fontWeight: "700",
+    letterSpacing: 0.2,
   },
 });

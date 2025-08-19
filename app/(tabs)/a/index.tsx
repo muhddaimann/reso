@@ -97,13 +97,7 @@ export default function Home() {
       </ScrollView>
 
       <TopFAB visible={showFab} scrollRef={scrollRef} />
-      <NewFAB
-        visible={showNewFab}
-        extended={isNewFabExtended}
-        onPress={() => {
-          showToast({ message: "New session started!", type: "success" });
-        }}
-      />
+      <NewFAB visible={showNewFab} extended={isNewFabExtended} />
     </>
   );
 }

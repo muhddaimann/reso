@@ -21,6 +21,12 @@ export default function LayoutA() {
           title: "",
         }}
       />
+      <Stack.Screen
+        name="sessionPage"
+        options={{
+          title: "",
+        }}
+      />
     </Stack>
   );
 }
