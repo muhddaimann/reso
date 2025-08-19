@@ -1,10 +1,12 @@
 import NewFAB from "@/components/a/newFAB";
+import NewModal from "@/components/a/newModal";
 import UserCard from "@/components/a/userCard";
 import SkeletonLoad from "@/components/skeletonLoad";
 import TopFAB from "@/components/topFAB";
 import { useTabVisibility } from "@/contexts/bottomContext";
 import { useScrollDirection } from "@/hooks/useBottomNav";
 import { useToast } from "@/hooks/useToast";
+import { router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Platform,
@@ -27,6 +29,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [showNewFab] = useState(true);
   const [isNewFabExtended, setIsNewFabExtended] = useState(true);
+  const [openSession, setOpenSession] = useState(false);
 
   useEffect(() => {
     if (direction === "down") setHideTabBar(true);
@@ -47,6 +50,24 @@ export default function Home() {
       showToast({ message: "Home data refreshed!", type: "success" });
     }, 800);
   }, [showToast]);
+
+  const handleSessionContinue = ({
+    path,
+    answers,
+    questions,
+  }: {
+    path: "accept" | "fight";
+    answers: string[];
+    questions: string[];
+  }) => {
+    const params = {
+      path,
+      answers: JSON.stringify(answers),
+      questions: JSON.stringify(questions),
+    };
+    setOpenSession(false);
+    router.push({ pathname: "/(tabs)/a/sessionPage", params });
+  };
 
   const handleScroll = (event: any) => {
     const scrollY = event.nativeEvent.contentOffset.y;
@@ -95,9 +116,17 @@ export default function Home() {
           </View>
         </View>
       </ScrollView>
-
       <TopFAB visible={showFab} scrollRef={scrollRef} />
-      <NewFAB visible={showNewFab} extended={isNewFabExtended} />
+      <NewFAB
+        visible={showNewFab}
+        extended={isNewFabExtended}
+        onPress={() => setOpenSession(true)}
+      />
+      <NewModal
+        open={openSession}
+        onDismiss={() => setOpenSession(false)}
+        onContinue={handleSessionContinue}
+      />
     </>
   );
 }
