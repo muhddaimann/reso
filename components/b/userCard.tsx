@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
+    paddingVertical: wp("0%"),
     paddingHorizontal: wp("2%"),
     gap: wp("2%"),
   },
