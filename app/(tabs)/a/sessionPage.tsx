@@ -1,6 +1,6 @@
 import UserCard from "@/components/b/userCard";
 import { useTabVisibility } from "@/contexts/bottomContext";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -11,11 +11,10 @@ import {
 } from "react-native";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SessionPage() {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { setHideTabBar } = useTabVisibility();
   const scrollRef = useRef<ScrollView>(null);
 
@@ -50,161 +49,155 @@ export default function SessionPage() {
     () => ["What is your next step?", "What quote are you basing this on?"],
     []
   );
-  const [extraAnswers, setExtraAnswers] = useState<string[]>(
-    Array.from({ length: extraQuestions.length }, () => "")
-  );
-  const pendingIndex = extraAnswers.findIndex((a) => !a.trim());
-  const hasPending = pendingIndex !== -1;
-  const [input, setInput] = useState("");
 
-  useEffect(() => {
-    setInput("");
-  }, [pendingIndex]);
+  const [nextStep, setNextStep] = useState("");
+  const [quote, setQuote] = useState("");
 
-  const handleSend = () => {
-    const val = input.trim();
-    if (!val || !hasPending) return;
-    setExtraAnswers((prev) => {
-      const copy = [...prev];
-      copy[pendingIndex] = val;
-      return copy;
-    });
-    setInput("");
-    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+  const handleComplete = () => {
+    console.log("Session Complete");
+    console.log("Next Step:", nextStep);
+    console.log("Quote:", quote);
+    router.back();
   };
 
-  const messages = useMemo(() => {
-    const m: { role: "system" | "user"; text: string }[] = [];
-    parsedQuestions.forEach((q, i) => {
-      m.push({ role: "system", text: q });
-      m.push({ role: "user", text: parsedAnswers[i]?.trim() || "—" });
-    });
-    extraQuestions.forEach((q, i) => {
-      m.push({ role: "system", text: q });
-      if (extraAnswers[i]?.trim())
-        m.push({ role: "user", text: extraAnswers[i] });
-    });
-    return m;
-  }, [parsedQuestions, parsedAnswers, extraQuestions, extraAnswers]);
+  const handleFocus = () => {
+    setTimeout(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    }, 300);
+  };
+
+  const pathText = useMemo(() => {
+    if (!path) return "Reviewing your session.";
+    return `You chose to ${path} this thought.`;
+  }, [path]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+    >
       <UserCard showBack title="Session" />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={styles.content}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <ScrollView
-          ref={scrollRef}
-          contentContainerStyle={styles.content}
-          bounces={false}
-          alwaysBounceVertical={false}
-          overScrollMode="never"
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.surface,
+              shadowColor: theme.colors.shadow,
+            },
+          ]}
         >
-          <View style={styles.headerRow}>
-            <Text
-              style={[
-                styles.header,
-                {
-                  color: theme.colors.onSurfaceVariant,
-                  backgroundColor: theme.colors.surfaceVariant,
-                },
-              ]}
-            >
-              Path: {(path as string) || "—"}
-            </Text>
-          </View>
+          <Text style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
+            Session Recap
+          </Text>
+          {parsedQuestions.map((q, i) => (
+            <View key={i} style={styles.recapItem}>
+              <Text
+                style={[
+                  styles.recapQuestion,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+              >
+                {q}
+              </Text>
+              <Text
+                style={[styles.recapAnswer, { color: theme.colors.onSurface }]}
+              >
+                {parsedAnswers[i]?.trim() || "—"}
+              </Text>
+            </View>
+          ))}
+        </View>
 
-          {messages.map((m, idx) =>
-            m.role === "system" ? (
-              <View key={idx} style={styles.leftRow}>
-                <Text
-                  style={[
-                    styles.sender,
-                    { color: theme.colors.onSurfaceVariant },
-                  ]}
-                >
-                  System
-                </Text>
-                <View
-                  style={[
-                    styles.bubble,
-                    styles.leftBubble,
-                    {
-                      backgroundColor: theme.colors.surface,
-                      borderColor: theme.colors.outlineVariant,
-                    },
-                  ]}
-                >
-                  <Text style={{ color: theme.colors.onSurface }}>
-                    {m.text}
-                  </Text>
-                </View>
-              </View>
-            ) : (
-              <View key={idx} style={styles.rightRow}>
-                <Text
-                  style={[
-                    styles.senderRight,
-                    { color: theme.colors.onSurfaceVariant },
-                  ]}
-                >
-                  You
-                </Text>
-                <View
-                  style={[
-                    styles.bubble,
-                    styles.rightBubble,
-                    { backgroundColor: theme.colors.primary },
-                  ]}
-                >
-                  <Text style={{ color: theme.colors.onPrimary }}>
-                    {m.text}
-                  </Text>
-                </View>
-              </View>
-            )
-          )}
-        </ScrollView>
-
-        {hasPending && (
-          <View
+        <View style={styles.headerRow}>
+          <Text
             style={[
-              styles.inputBar,
+              styles.pathHeader,
               {
-                backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.outlineVariant,
-                paddingBottom: insets.bottom ? insets.bottom * 0.6 : wp("3%"),
+                color: theme.colors.onSurfaceVariant,
+                backgroundColor: theme.colors.surfaceVariant,
               },
             ]}
           >
+            {pathText}
+          </Text>
+        </View>
+
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.surface,
+              shadowColor: theme.colors.shadow,
+            },
+          ]}
+        >
+          <Text style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
+            Your Reflection
+          </Text>
+          <View>
+            <Text
+              style={[
+                styles.inputLabel,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
+            >
+              {extraQuestions[0]}
+            </Text>
             <TextInput
               mode="outlined"
-              value={input}
-              onChangeText={setInput}
-              placeholder={extraQuestions[pendingIndex]}
+              value={nextStep}
+              onChangeText={setNextStep}
+              placeholder="Describe your next actionable step."
               style={styles.input}
               outlineColor={theme.colors.outline}
               activeOutlineColor={theme.colors.primary}
               multiline
+              onFocus={handleFocus}
             />
-            <Button
-              mode="contained"
-              onPress={handleSend}
-              disabled={!input.trim()}
-              style={styles.sendBtn}
-              contentStyle={{ paddingHorizontal: wp("3%") }}
-            >
-              Send
-            </Button>
           </View>
-        )}
-      </KeyboardAvoidingView>
-    </View>
+          <View>
+            <Text
+              style={[
+                styles.inputLabel,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
+            >
+              {extraQuestions[1]}
+            </Text>
+            <TextInput
+              mode="outlined"
+              value={quote}
+              onChangeText={setQuote}
+              placeholder="e.g., 'The journey of a thousand miles...'"
+              style={styles.input}
+              outlineColor={theme.colors.outline}
+              activeOutlineColor={theme.colors.primary}
+              multiline
+              onFocus={handleFocus}
+            />
+          </View>
+        </View>
+
+        <Button
+          mode="contained"
+          onPress={handleComplete}
+          disabled={!nextStep.trim() || !quote.trim()}
+          style={styles.completeButton}
+          contentStyle={{ paddingVertical: wp("1.5%") }}
+          labelStyle={{ fontSize: wp("4%") }}
+        >
+          Complete Session
+        </Button>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -212,63 +205,56 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: wp("4%"),
     paddingTop: wp("3%"),
-    paddingBottom: wp("3%"),
-    gap: wp("2%"),
+    paddingBottom: wp("8%"),
+    gap: wp("4%"),
   },
   headerRow: {
     alignItems: "center",
-    marginBottom: wp("1%"),
   },
-  header: {
-    fontSize: wp("3.2%"),
-    paddingHorizontal: wp("3%"),
-    paddingVertical: wp("1%"),
+  pathHeader: {
+    fontSize: wp("3.8%"),
+    textAlign: "center",
+    paddingHorizontal: wp("4%"),
+    paddingVertical: wp("2%"),
     borderRadius: wp("3%"),
+    lineHeight: wp("5%"),
   },
-  leftRow: {
-    alignSelf: "flex-start",
-    maxWidth: "85%",
+  card: {
+    borderRadius: wp("4%"),
+    padding: wp("4%"),
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 2,
+    gap: wp("3%"),
   },
-  rightRow: {
-    alignSelf: "flex-end",
-    maxWidth: "85%",
+  cardTitle: {
+    fontSize: wp("4.5%"),
+    fontWeight: "bold",
   },
-  sender: {
-    fontSize: wp("3%"),
-    marginBottom: wp("1%"),
+  recapItem: {
+    marginBottom: wp("2%"),
+    gap: wp("1%"),
   },
-  senderRight: {
-    fontSize: wp("3%"),
-    textAlign: "right",
-    marginBottom: wp("1%"),
+  recapQuestion: {
+    fontSize: wp("3.5%"),
+    opacity: 0.8,
   },
-  bubble: {
-    paddingHorizontal: wp("3.5%"),
-    paddingVertical: wp("2.8%"),
-    borderRadius: wp("3.5%"),
-    borderWidth: StyleSheet.hairlineWidth,
+  recapAnswer: {
+    fontSize: wp("4%"),
+    fontWeight: "500",
+    lineHeight: wp("5.5%"),
   },
-  leftBubble: {
-    borderTopLeftRadius: wp("1.5%"),
-  },
-  rightBubble: {
-    borderTopRightRadius: wp("1.5%"),
-  },
-  inputBar: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    paddingVertical: wp("20%"),
-    paddingHorizontal: wp("3%"),
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "center",
-    gap: wp("2%"),
+  inputLabel: {
+    fontSize: wp("3.8%"),
+    fontWeight: "500",
+    marginBottom: wp("2%"),
   },
   input: {
-    flex: 1,
-    maxHeight: wp("24%"),
+    maxHeight: wp("28%"),
   },
-  sendBtn: {
-    alignSelf: "flex-end",
+  completeButton: {
     borderRadius: wp("3%"),
+    marginTop: wp("2%"),
   },
 });

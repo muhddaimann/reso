@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
@@ -120,15 +121,32 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
   const handleContinue = () =>
     onContinue({ path, answers, questions: QUESTIONS });
 
+  const handleSaveDraft = () => {
+    // TODO: Implement draft saving logic in the parent component
+    console.log("Draft saved:", { answers, step, path });
+    onDismiss(); // Close the modal after saving
+  };
+
   const atLast = step >= QUESTIONS.length;
   const canNext = atLast || !!answers[step]?.trim();
+  const hasInput = useMemo(
+    () => answers.some((a) => a.trim() !== ""),
+    [answers]
+  );
 
   if (!shouldRender) return null;
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       <Animated.View style={[styles.overlay, { opacity: opacityAnim }]}>
-        <Pressable style={styles.backdrop} onPress={onDismiss} />
+        <Pressable
+          style={styles.backdrop}
+          onPress={() => {
+            if (!hasInput) {
+              onDismiss();
+            }
+          }}
+        />
 
         <Animated.View
           style={[
@@ -147,6 +165,36 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
             contentContainerStyle={{ paddingBottom: wp("3%") }}
             showsVerticalScrollIndicator={false}
           >
+            <View style={styles.headerRow}>
+              <MaterialCommunityIcons
+                name="feather"
+                size={wp("8%")}
+                color={theme.colors.onSurfaceVariant}
+              />
+              <View style={styles.headerActions}>
+                <Button
+                  mode="text"
+                  onPress={handleSaveDraft}
+                  style={styles.headerButton}
+                  disabled={!hasInput}
+                >
+                  Save Draft
+                </Button>
+                <Button
+                  mode="outlined"
+                  onPress={onDismiss}
+                  style={[
+                    styles.headerButton,
+                    !hasInput && { borderColor: theme.colors.error },
+                  ]}
+                  disabled={hasInput}
+                  textColor={!hasInput ? theme.colors.error : undefined}
+                >
+                  Close
+                </Button>
+              </View>
+            </View>
+
             {!atLast ? (
               <>
                 <Text
@@ -251,6 +299,19 @@ const styles = StyleSheet.create({
     paddingTop: wp("4%"),
     paddingHorizontal: wp("5%"),
     maxHeight: screenHeight * 0.75,
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: wp("4%"),
+  },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerButton: {
+    borderRadius: wp("4%"),
   },
   progressWrap: { gap: wp("2%"), marginTop: wp("2%") },
   stepText: { fontSize: wp("3.2%"), textAlign: "right" },
