@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     gap: wp("2%"),
   },
   card: {
-    height: wp("250%"),
+    height: wp("20%"),
     borderRadius: wp("4%"),
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

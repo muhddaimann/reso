@@ -21,6 +21,12 @@ export default function LayoutB() {
           title: "",
         }}
       />
+      <Stack.Screen
+        name="chatPage"
+        options={{
+          title: "",
+        }}
+      />
     </Stack>
   );
 }

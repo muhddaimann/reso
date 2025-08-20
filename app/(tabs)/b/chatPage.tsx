@@ -1,100 +1,68 @@
 import UserCard from "@/components/b/userCard";
 import { useTabVisibility } from "@/contexts/bottomContext";
-import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   View,
 } from "react-native";
-import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, IconButton, Text, TextInput, useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function SessionPage() {
+type Message = {
+  role: "system" | "user";
+  text: string;
+};
+
+export default function ChatPage() {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
   const { setHideTabBar } = useTabVisibility();
   const scrollRef = useRef<ScrollView>(null);
-
-  const { path, answers, questions } = useLocalSearchParams<{
-    path?: string;
-    answers?: string;
-    questions?: string;
-  }>();
-
-  const parsedAnswers = useMemo(() => {
-    try {
-      return answers ? (JSON.parse(answers) as string[]) : [];
-    } catch {
-      return [];
-    }
-  }, [answers]);
-
-  const parsedQuestions = useMemo(() => {
-    try {
-      return questions ? (JSON.parse(questions) as string[]) : [];
-    } catch {
-      return [];
-    }
-  }, [questions]);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<Message[]>([
+    { role: "system", text: "Hello! How can I help you today?" },
+  ]);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     setHideTabBar(true);
     return () => setHideTabBar(false);
   }, [setHideTabBar]);
 
-  const extraQuestions = useMemo(
-    () => ["What is your next step?", "What quote are you basing this on?"],
-    []
-  );
-  const [extraAnswers, setExtraAnswers] = useState<string[]>(
-    Array.from({ length: extraQuestions.length }, () => "")
-  );
-  const pendingIndex = extraAnswers.findIndex((a) => !a.trim());
-  const hasPending = pendingIndex !== -1;
-  const [input, setInput] = useState("");
-
   useEffect(() => {
-    setInput("");
-  }, [pendingIndex]);
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        scrollRef.current?.scrollToEnd({ animated: true });
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   const handleSend = () => {
     const val = input.trim();
-    if (!val || !hasPending) return;
-    setExtraAnswers((prev) => {
-      const copy = [...prev];
-      copy[pendingIndex] = val;
-      return copy;
-    });
+    if (!val) return;
+    setMessages((prev) => [...prev, { role: "user", text: val }]);
     setInput("");
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
-  const messages = useMemo(() => {
-    const m: { role: "system" | "user"; text: string }[] = [];
-    parsedQuestions.forEach((q, i) => {
-      m.push({ role: "system", text: q });
-      m.push({ role: "user", text: parsedAnswers[i]?.trim() || "—" });
-    });
-    extraQuestions.forEach((q, i) => {
-      m.push({ role: "system", text: q });
-      if (extraAnswers[i]?.trim())
-        m.push({ role: "user", text: extraAnswers[i] });
-    });
-    return m;
-  }, [parsedQuestions, parsedAnswers, extraQuestions, extraAnswers]);
-
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <UserCard showBack title="Session" />
+      <UserCard showBack title="Chat" />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+        keyboardVerticalOffset={wp("15%")}
       >
         <ScrollView
           ref={scrollRef}
@@ -105,20 +73,6 @@ export default function SessionPage() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.headerRow}>
-            <Text
-              style={[
-                styles.header,
-                {
-                  color: theme.colors.onSurfaceVariant,
-                  backgroundColor: theme.colors.surfaceVariant,
-                },
-              ]}
-            >
-              Path: {(path as string) || "—"}
-            </Text>
-          </View>
-
           {messages.map((m, idx) =>
             m.role === "system" ? (
               <View key={idx} style={styles.leftRow}>
@@ -171,38 +125,36 @@ export default function SessionPage() {
           )}
         </ScrollView>
 
-        {hasPending && (
-          <View
-            style={[
-              styles.inputBar,
-              {
-                backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.outlineVariant,
-                paddingBottom: insets.bottom ? insets.bottom * 0.6 : wp("3%"),
-              },
-            ]}
-          >
-            <TextInput
-              mode="outlined"
-              value={input}
-              onChangeText={setInput}
-              placeholder={extraQuestions[pendingIndex]}
-              style={styles.input}
-              outlineColor={theme.colors.outline}
-              activeOutlineColor={theme.colors.primary}
-              multiline
-            />
-            <Button
-              mode="contained"
-              onPress={handleSend}
-              disabled={!input.trim()}
-              style={styles.sendBtn}
-              contentStyle={{ paddingHorizontal: wp("3%") }}
-            >
-              Send
-            </Button>
-          </View>
-        )}
+        <View
+          style={[
+            styles.inputBar,
+            {
+              backgroundColor: theme.colors.surface,
+              borderColor: theme.colors.outlineVariant,
+              paddingBottom: insets.bottom === 0 ? wp("3%") : insets.bottom,
+            },
+          ]}
+        >
+          <TextInput
+            mode="outlined"
+            value={input}
+            onChangeText={setInput}
+            placeholder="Type a message"
+            style={styles.input}
+            outlineColor={theme.colors.outline}
+            activeOutlineColor={theme.colors.primary}
+            multiline
+          />
+          <IconButton
+            icon="send"
+            size={wp("7%")}
+            iconColor={theme.colors.onPrimary}
+            containerColor={theme.colors.primary}
+            onPress={handleSend}
+            disabled={!input.trim()}
+            style={styles.sendBtn}
+          />
+        </View>
       </KeyboardAvoidingView>
     </View>
   );
@@ -214,16 +166,6 @@ const styles = StyleSheet.create({
     paddingTop: wp("3%"),
     paddingBottom: wp("3%"),
     gap: wp("2%"),
-  },
-  headerRow: {
-    alignItems: "center",
-    marginBottom: wp("1%"),
-  },
-  header: {
-    fontSize: wp("3.2%"),
-    paddingHorizontal: wp("3%"),
-    paddingVertical: wp("1%"),
-    borderRadius: wp("3%"),
   },
   leftRow: {
     alignSelf: "flex-start",
@@ -256,10 +198,10 @@ const styles = StyleSheet.create({
   },
   inputBar: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    paddingVertical: wp("20%"),
+    paddingVertical: wp("2%"),
     paddingHorizontal: wp("3%"),
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "center",
     gap: wp("2%"),
   },
@@ -268,7 +210,6 @@ const styles = StyleSheet.create({
     maxHeight: wp("24%"),
   },
   sendBtn: {
-    alignSelf: "flex-end",
     borderRadius: wp("3%"),
   },
 });

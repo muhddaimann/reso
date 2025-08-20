@@ -1,6 +1,6 @@
 import { useTabVisibility } from "@/contexts/bottomContext";
 import { useEffect, useRef } from "react";
-import { Animated, Easing, Platform, Pressable } from "react-native";
+import { Animated, Easing, Platform, Pressable, View } from "react-native";
 import { useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
@@ -78,23 +78,10 @@ export default function AnimatedTabBar({
   navigation,
 }: any) {
   const theme = useTheme();
-  const { hideTabBar } = useTabVisibility();
-
-  const opacity = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    Animated.timing(opacity, {
-      toValue: hideTabBar ? 0 : 1,
-      duration: 400,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
-  }, [hideTabBar, opacity]);
 
   return (
-    <Animated.View
+    <View
       style={{
-        opacity,
         position: "absolute",
         left: 0,
         right: 0,
@@ -120,6 +107,6 @@ export default function AnimatedTabBar({
           isFocused={state.index === index}
         />
       ))}
-    </Animated.View>
+    </View>
   );
 }

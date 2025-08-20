@@ -1,5 +1,8 @@
 import AnimatedTabBar from "@/components/bottomNav";
-import { TabVisibilityProvider } from "@/contexts/bottomContext";
+import {
+  TabVisibilityProvider,
+  useTabVisibility,
+} from "@/contexts/bottomContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { useTheme } from "react-native-paper";
@@ -8,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 function TabLayoutInner() {
   const theme = useTheme();
+  const { hideTabBar } = useTabVisibility();
 
   return (
     <SafeAreaView
@@ -19,7 +23,7 @@ function TabLayoutInner() {
           headerShown: false,
           tabBarLabelStyle: { fontSize: wp("3.2%") },
         }}
-        tabBar={(props) => <AnimatedTabBar {...props} />}
+        tabBar={(props) => (hideTabBar ? null : <AnimatedTabBar {...props} />)}
       >
         <Tabs.Screen
           name="a"

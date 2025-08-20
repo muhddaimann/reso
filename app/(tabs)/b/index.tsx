@@ -1,13 +1,13 @@
-import UserCard from "@/components/b/userCard";
 import TopFAB from "@/components/topFAB";
 import { useTabVisibility } from "@/contexts/bottomContext";
 import { useScrollDirection } from "@/hooks/useBottomNav";
+import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { useTheme } from "react-native-paper";
+import { Button, useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
-export default function Dashboard() {
+export default function PageB() {
   const theme = useTheme();
   const scrollRef = useRef<ScrollView>(null);
   const { setHideTabBar } = useTabVisibility();
@@ -38,8 +38,6 @@ export default function Dashboard() {
         }}
         scrollEventThrottle={16}
       >
-        <UserCard />
-
         <View style={styles.body}>
           <View
             style={[
@@ -49,7 +47,9 @@ export default function Dashboard() {
                 shadowColor: theme.colors.shadow,
               },
             ]}
-          ></View>
+          >
+            <Button onPress={() => router.push("/(tabs)/b/chatPage")} >Go to Chat</Button>
+          </View>
         </View>
       </ScrollView>
 
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     gap: wp("2%"),
   },
   card: {
-    height: wp("250%"),
+    height: wp("25%"),
     borderRadius: wp("4%"),
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
