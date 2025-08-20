@@ -16,7 +16,6 @@ import {
   Button,
   Divider,
   ProgressBar,
-  SegmentedButtons,
   TextInput,
   useTheme,
 } from "react-native-paper";
@@ -112,7 +111,7 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
       }
     });
     return () => {
-      // @ts-ignore RN types
+      // @ts-ignore
       task?.cancel?.();
     };
   }, [open, step, QUESTIONS.length]);
@@ -142,9 +141,7 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
         <Pressable
           style={styles.backdrop}
           onPress={() => {
-            if (!hasInput) {
-              onDismiss();
-            }
+            if (!hasInput) onDismiss();
           }}
         />
 
@@ -172,73 +169,118 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
                 color={theme.colors.onSurfaceVariant}
               />
               <View style={styles.headerActions}>
-                <Button
-                  mode="text"
-                  onPress={handleSaveDraft}
-                  style={styles.headerButton}
-                  disabled={!hasInput}
-                >
-                  Save Draft
-                </Button>
-                <Button
-                  mode="outlined"
-                  onPress={onDismiss}
-                  style={[
-                    styles.headerButton,
-                    !hasInput && { borderColor: theme.colors.error },
-                  ]}
-                  disabled={hasInput}
-                  textColor={!hasInput ? theme.colors.error : undefined}
-                >
-                  Close
-                </Button>
+                {hasInput ? (
+                  <Button
+                    mode="text"
+                    onPress={handleSaveDraft}
+                    style={styles.headerButton}
+                  >
+                    Save Draft
+                  </Button>
+                ) : (
+                  <Button
+                    mode="outlined"
+                    onPress={onDismiss}
+                    style={[
+                      styles.headerButton,
+                      { borderColor: theme.colors.error },
+                    ]}
+                    textColor={theme.colors.error}
+                  >
+                    Close
+                  </Button>
+                )}
               </View>
             </View>
 
-            {!atLast ? (
-              <>
-                <Text
-                  style={[styles.question, { color: theme.colors.onSurface }]}
-                >
-                  {QUESTIONS[step]}
-                </Text>
-                <TextInput
-                  ref={inputRef}
-                  mode="outlined"
-                  multiline
-                  autoFocus
-                  value={answers[step]}
-                  onChangeText={(t) =>
-                    setAnswers((a) => {
-                      const c = [...a];
-                      c[step] = t;
-                      return c;
-                    })
-                  }
-                  outlineColor={theme.colors.outline}
-                  activeOutlineColor={theme.colors.primary}
-                  style={{ minHeight: wp("30%") }}
-                  placeholder="Type here..."
-                  textAlignVertical="top"
-                />
-              </>
-            ) : (
-              <>
-                <Text
-                  style={[styles.question, { color: theme.colors.onSurface }]}
-                >
-                  Choose your path
-                </Text>
-                <SegmentedButtons
-                  value={path}
-                  onValueChange={(v) => setPath(v as "accept" | "fight")}
-                  buttons={[
-                    { value: "accept", label: "Accept" },
-                    { value: "fight", label: "Fight" },
-                  ]}
-                />
-              </>
-            )}
+            <View style={styles.phaseBody}>
+              {!atLast ? (
+                <>
+                  <Text
+                    style={[styles.question, { color: theme.colors.onSurface }]}
+                  >
+                    {QUESTIONS[step]}
+                  </Text>
+                  <TextInput
+                    ref={inputRef}
+                    mode="outlined"
+                    multiline
+                    autoFocus
+                    value={answers[step]}
+                    onChangeText={(t) =>
+                      setAnswers((a) => {
+                        const c = [...a];
+                        c[step] = t;
+                        return c;
+                      })
+                    }
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.primary}
+                    style={{ minHeight: wp("30%") }}
+                    placeholder="Type here..."
+                    textAlignVertical="top"
+                  />
+                </>
+              ) : (
+                <>
+                  <Text
+                    style={[styles.question, { color: theme.colors.onSurface }]}
+                  >
+                    Choose your path
+                  </Text>
+
+                  <View style={styles.pathRow}>
+                    <Pressable
+                      onPress={() => setPath("accept")}
+                      style={[
+                        styles.pathCard,
+                        {
+                          backgroundColor: theme.colors.primaryContainer,
+                          borderColor:
+                            path === "accept"
+                              ? theme.colors.primary
+                              : "transparent",
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          color: theme.colors.onPrimaryContainer,
+                          fontWeight: "700",
+                          fontSize: wp("4%"),
+                        }}
+                      >
+                        Accept
+                      </Text>
+                    </Pressable>
+
+                    <Pressable
+                      onPress={() => setPath("fight")}
+                      style={[
+                        styles.pathCard,
+                        {
+                          backgroundColor: theme.colors.secondaryContainer,
+                          borderColor:
+                            path === "fight"
+                              ? theme.colors.secondary
+                              : "transparent",
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          color: theme.colors.onSecondaryContainer,
+                          fontWeight: "700",
+                          fontSize: wp("4%"),
+                        }}
+                      >
+                        Fight
+                      </Text>
+                    </Pressable>
+                  </View>
+                </>
+              )}
+            </View>
 
             <Divider style={{ marginVertical: wp("3%") }} />
 
@@ -298,7 +340,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: wp("4%"),
     paddingTop: wp("4%"),
     paddingHorizontal: wp("5%"),
-    maxHeight: screenHeight * 0.75,
+    minHeight: screenHeight * 0.3,
   },
   headerRow: {
     flexDirection: "row",
@@ -313,7 +355,23 @@ const styles = StyleSheet.create({
   headerButton: {
     borderRadius: wp("4%"),
   },
-  progressWrap: { gap: wp("2%"), marginTop: wp("2%") },
+  phaseBody: {
+    justifyContent: "flex-start",
+    gap: wp("3%"),
+  },
+  pathRow: {
+    flexDirection: "row",
+    gap: wp("3%"),
+  },
+  pathCard: {
+    flex: 1,
+    paddingVertical: wp("6%"),
+    borderRadius: wp("3.5%"),
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+  },
+  progressWrap: { gap: wp("2%"), marginVertical: wp("2%") },
   stepText: { fontSize: wp("3.2%"), textAlign: "right" },
   question: { fontSize: wp("4.5%"), fontWeight: "700", marginBottom: wp("3%") },
   actions: {
