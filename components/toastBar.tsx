@@ -11,7 +11,6 @@ import {
 export default function ToastBar() {
   const { toast, hideToast } = useToast();
   const theme = useTheme();
-  const isDark = theme.dark;
 
   const translate = useRef(new Animated.Value(-100)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -21,12 +20,12 @@ export default function ToastBar() {
       Animated.parallel([
         Animated.timing(translate, {
           toValue: 0,
-          duration: 300,
+          duration: 220,
           useNativeDriver: true,
         }),
         Animated.timing(opacity, {
           toValue: 1,
-          duration: 300,
+          duration: 220,
           useNativeDriver: true,
         }),
       ]).start();
@@ -35,12 +34,12 @@ export default function ToastBar() {
         Animated.parallel([
           Animated.timing(translate, {
             toValue: -100,
-            duration: 300,
+            duration: 200,
             useNativeDriver: true,
           }),
           Animated.timing(opacity, {
             toValue: 0,
-            duration: 300,
+            duration: 200,
             useNativeDriver: true,
           }),
         ]).start(hideToast);
@@ -48,48 +47,41 @@ export default function ToastBar() {
 
       return () => clearTimeout(timeout);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast, hideToast]);
+  }, [toast, hideToast, opacity, translate]);
 
   if (!toast) return null;
 
-  const toastPalette = {
+  const type = toast.type ?? "custom";
+
+  const palette = {
     success: {
-      light: { bg: "rgba(109, 152, 134, 0.7)", fg: "#FFFFFF" },
-      dark: { bg: "rgba(109, 152, 134, 0.7)", fg: "#FFFFFF" },
+      bg: theme.colors.primaryContainer,
+      fg: theme.colors.onPrimaryContainer,
     },
     error: {
-      light: { bg: "rgba(209, 67, 67, 0.7)", fg: "#FFFFFF" },
-      dark: { bg: "rgba(179, 92, 92, 0.7)", fg: "#FFFFFF" },
+      bg: theme.colors.errorContainer,
+      fg: theme.colors.onErrorContainer,
     },
     info: {
-      light: { bg: "rgba(91, 95, 151, 0.7)", fg: "#FFFFFF" },
-      dark: { bg: "rgba(174, 176, 229, 0.7)", fg: "#23264C" },
+      bg: theme.colors.secondaryContainer,
+      fg: theme.colors.onSecondaryContainer,
     },
     custom: {
-      light: { bg: "rgba(226, 228, 236, 0.7)", fg: "#333333" },
-      dark: { bg: "rgba(56, 58, 70, 0.7)", fg: "#D4D6E2" },
+      bg: theme.colors.surfaceVariant,
+      fg: theme.colors.onSurfaceVariant,
     },
-  };
+  } as const;
 
-  const toastType = toast?.type ?? "custom";
-  const current =
-    toastPalette[toastType as keyof typeof toastPalette][
-      isDark ? "dark" : "light"
-    ];
+  const current = (palette as any)[type] ?? palette.custom;
 
-  const getIconName = () => {
-    switch (toast.type) {
-      case "success":
-        return "check-circle";
-      case "error":
-        return "alert-circle";
-      case "info":
-        return "information";
-      default:
-        return "bell";
-    }
-  };
+  const iconName =
+    type === "success"
+      ? "check-circle"
+      : type === "error"
+        ? "alert-circle"
+        : type === "info"
+          ? "information"
+          : "bell";
 
   return (
     <Animated.View
@@ -105,7 +97,7 @@ export default function ToastBar() {
     >
       <View style={styles.icon}>
         <MaterialCommunityIcons
-          name={getIconName()}
+          name={iconName}
           size={hp("2.2%")}
           color={current.fg}
         />
@@ -134,12 +126,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     zIndex: 6,
   },
-  icon: {
-    marginRight: wp("2.5%"),
-  },
-  text: {
-    fontSize: hp("1.5%"),
-    fontWeight: "500",
-    flex: 1,
-  },
+  icon: { marginRight: wp("2.5%") },
+  text: { fontSize: hp("1.5%"), fontWeight: "500", flex: 1 },
 });

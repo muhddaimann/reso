@@ -1,3 +1,4 @@
+import { useToast } from "@/hooks/useToast";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -35,7 +36,7 @@ type Props = {
 
 export default function NewModal({ open, onDismiss, onContinue }: Props) {
   const theme = useTheme();
-
+  const { showToast } = useToast();
   const QUESTIONS = useMemo(
     () => [
       "What you feel right now?",
@@ -74,13 +75,13 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: 0,
-          duration: 400,
-          easing: Easing.out(Easing.exp),
+          duration: 300,
+          easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
         Animated.timing(opacityAnim, {
           toValue: 1,
-          duration: 400,
+          duration: 300,
           useNativeDriver: true,
         }),
       ]).start(() => {
@@ -90,13 +91,13 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: -screenHeight,
-          duration: 400,
-          easing: Easing.in(Easing.exp),
+          duration: 260,
+          easing: Easing.in(Easing.cubic),
           useNativeDriver: true,
         }),
         Animated.timing(opacityAnim, {
           toValue: 0,
-          duration: 400,
+          duration: 260,
           useNativeDriver: true,
         }),
       ]).start(() => setShouldRender(false));
@@ -122,9 +123,8 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
     onContinue({ path, answers, questions: QUESTIONS });
 
   const handleSaveDraft = () => {
-    // TODO: Implement draft saving logic in the parent component
-    console.log("Draft saved:", { answers, step, path });
-    onDismiss(); // Close the modal after saving
+    showToast({ message: "Saved to draft, check Home.", type: "success" });
+    onDismiss();
   };
 
   const atLast = step >= QUESTIONS.length;

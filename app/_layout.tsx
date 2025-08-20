@@ -8,27 +8,26 @@ import { Provider as PaperProvider } from "react-native-paper";
 
 function LayoutWithTheme() {
   const { theme } = useToggle();
-
   return (
     <PaperProvider theme={theme}>
       <StatusBar
         style={theme.dark ? "light" : "dark"}
         backgroundColor={theme.colors.surface}
       />
-      <Slot />
-      <ToastBar />
+      <AuthProvider>
+        <ToastProvider>
+          <Slot />
+          <ToastBar />
+        </ToastProvider>
+      </AuthProvider>
     </PaperProvider>
   );
 }
 
 export default function RootLayout() {
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <ThemeProvider>
-          <LayoutWithTheme />
-        </ThemeProvider>
-      </AuthProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <LayoutWithTheme />
+    </ThemeProvider>
   );
 }
