@@ -171,11 +171,15 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
               <View style={styles.headerActions}>
                 {hasInput ? (
                   <Button
-                    mode="text"
+                    mode="outlined"
                     onPress={handleSaveDraft}
-                    style={styles.headerButton}
+                    style={[
+                      styles.headerButton,
+                      { borderColor: theme.colors.primary },
+                    ]}
+                    textColor={theme.colors.primary}
                   >
-                    Save Draft
+                    Save to Draft
                   </Button>
                 ) : (
                   <Button

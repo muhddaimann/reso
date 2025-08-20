@@ -8,6 +8,20 @@ import {
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
 
+const hexToRgba = (hex: string, alpha = 1) => {
+  if (!hex) return `rgba(0,0,0,${alpha})`;
+  let c = hex.replace("#", "");
+  if (c.length === 3)
+    c = c
+      .split("")
+      .map((ch) => ch + ch)
+      .join("");
+  const r = parseInt(c.slice(0, 2), 16) || 0;
+  const g = parseInt(c.slice(2, 4), 16) || 0;
+  const b = parseInt(c.slice(4, 6), 16) || 0;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 export default function ToastBar() {
   const { toast, hideToast } = useToast();
   const theme = useTheme();
@@ -88,7 +102,7 @@ export default function ToastBar() {
       style={[
         styles.toast,
         {
-          backgroundColor: current.bg,
+          backgroundColor: hexToRgba(current.bg, 0.88),
           transform: [{ translateY: translate }],
           opacity,
           shadowColor: theme.colors.shadow,

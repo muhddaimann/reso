@@ -101,17 +101,50 @@ export default function Home() {
           <UserCard />
           <View style={styles.body}>
             {loading ? (
-              <SkeletonLoad />
+              <SkeletonLoad layout={[2, 2]} />
             ) : (
-              <View
-                style={[
-                  styles.card,
-                  {
-                    backgroundColor: theme.colors.surface,
-                    shadowColor: theme.colors.shadow,
-                  },
-                ]}
-              />
+              <View style={styles.grid}>
+                <View style={styles.col}>
+                  <View
+                    style={[
+                      styles.blockTall,
+                      {
+                        backgroundColor: theme.colors.surface,
+                        shadowColor: theme.colors.shadow,
+                      },
+                    ]}
+                  />
+                  <View
+                    style={[
+                      styles.blockShort,
+                      {
+                        backgroundColor: theme.colors.surface,
+                        shadowColor: theme.colors.shadow,
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.col}>
+                  <View
+                    style={[
+                      styles.blockShort,
+                      {
+                        backgroundColor: theme.colors.surface,
+                        shadowColor: theme.colors.shadow,
+                      },
+                    ]}
+                  />
+                  <View
+                    style={[
+                      styles.blockTall,
+                      {
+                        backgroundColor: theme.colors.surface,
+                        shadowColor: theme.colors.shadow,
+                      },
+                    ]}
+                  />
+                </View>
+              </View>
             )}
           </View>
         </View>
@@ -142,10 +175,25 @@ const styles = StyleSheet.create({
   body: {
     width: "100%",
     paddingHorizontal: wp("4%"),
-    gap: wp("2%"),
   },
-  card: {
-    height: wp("20%"),
+  grid: {
+    flexDirection: "row",
+    gap: wp("4%"),
+  },
+  col: {
+    flex: 1,
+    gap: wp("4%"),
+  },
+  blockTall: {
+    height: wp("50%"),
+    borderRadius: wp("4%"),
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+  blockShort: {
+    height: wp("60%"),
     borderRadius: wp("4%"),
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
