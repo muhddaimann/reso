@@ -1,4 +1,3 @@
-import { useTabVisibility } from "@/contexts/bottomContext";
 import { useEffect, useRef } from "react";
 import { Animated, Easing, Platform, Pressable, View } from "react-native";
 import { useTheme } from "react-native-paper";
