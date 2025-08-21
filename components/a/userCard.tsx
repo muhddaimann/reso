@@ -4,7 +4,7 @@ import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function UserCard() {
   const theme = useTheme();
-  const shortName = "Aiman";
+  const shortName = "User";
   const initial = shortName.charAt(0).toUpperCase();
 
   return (

@@ -1,3 +1,7 @@
+import MoodTrend from "@/components/a/a";
+import TopTrigger from "@/components/a/b";
+import RoutineSuggest from "@/components/a/c";
+import QuoteSuggest from "@/components/a/d";
 import NewFAB from "@/components/a/newFAB";
 import NewModal from "@/components/a/newModal";
 import UserCard from "@/components/a/userCard";
@@ -37,9 +41,7 @@ export default function Home() {
   }, [direction, setHideTabBar]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 800);
+    const timer = setTimeout(() => setLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -105,44 +107,26 @@ export default function Home() {
             ) : (
               <View style={styles.grid}>
                 <View style={styles.col}>
-                  <View
-                    style={[
-                      styles.blockTall,
-                      {
-                        backgroundColor: theme.colors.surface,
-                        shadowColor: theme.colors.shadow,
-                      },
-                    ]}
-                  />
-                  <View
-                    style={[
-                      styles.blockShort,
-                      {
-                        backgroundColor: theme.colors.surface,
-                        shadowColor: theme.colors.shadow,
-                      },
-                    ]}
-                  />
+                  <View style={styles.blockTall}>
+                    <MoodTrend />
+                  </View>
+                  <View style={styles.blockShort}>
+                    <RoutineSuggest />
+                  </View>
+                  <View style={styles.blockTall}>
+                    <MoodTrend />
+                  </View>
                 </View>
                 <View style={styles.col}>
-                  <View
-                    style={[
-                      styles.blockShort,
-                      {
-                        backgroundColor: theme.colors.surface,
-                        shadowColor: theme.colors.shadow,
-                      },
-                    ]}
-                  />
-                  <View
-                    style={[
-                      styles.blockTall,
-                      {
-                        backgroundColor: theme.colors.surface,
-                        shadowColor: theme.colors.shadow,
-                      },
-                    ]}
-                  />
+                  <View style={styles.blockShort}>
+                    <TopTrigger />
+                  </View>
+                  <View style={styles.blockTall}>
+                    <QuoteSuggest />
+                  </View>
+                  <View style={styles.blockShort}>
+                    <MoodTrend />
+                  </View>
                 </View>
               </View>
             )}
@@ -165,39 +149,22 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  scroll: {
-    flexGrow: 1,
-  },
+  scroll: { flexGrow: 1 },
   full: {
     flex: 1,
     paddingBottom: Platform.OS === "android" ? wp("10%") : wp("26%"),
   },
-  body: {
-    width: "100%",
-    paddingHorizontal: wp("4%"),
-  },
-  grid: {
-    flexDirection: "row",
-    gap: wp("4%"),
-  },
-  col: {
-    flex: 1,
-    gap: wp("4%"),
-  },
+  body: { width: "100%", paddingHorizontal: wp("4%") },
+  grid: { flexDirection: "row", gap: wp("4%") },
+  col: { flex: 1, gap: wp("4%") },
   blockTall: {
-    height: wp("50%"),
-    borderRadius: wp("4%"),
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 2,
-  },
-  blockShort: {
     height: wp("60%"),
     borderRadius: wp("4%"),
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 2,
+    overflow: "hidden",
+  },
+  blockShort: {
+    height: wp("50%"),
+    borderRadius: wp("4%"),
+    overflow: "hidden",
   },
 });

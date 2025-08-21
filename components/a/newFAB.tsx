@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   label: {
     flex: 1,
-    fontSize: wp("3.8%"),
+    fontSize: wp("3%"),
     fontWeight: "700",
     letterSpacing: 0.2,
   },
