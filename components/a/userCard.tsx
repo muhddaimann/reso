@@ -40,14 +40,14 @@ export default function UserCard() {
         <View style={styles.right}>
           <IconButton
             icon="sync"
-            size={wp("6.5%")}
+            size={wp("6%")}
             iconColor={theme.colors.onBackground}
             containerColor={theme.colors.background}
             onPress={() => {}}
           />
           <IconButton
             icon="bell-outline"
-            size={wp("6.5%")}
+            size={wp("6%")}
             iconColor={theme.colors.onBackground}
             containerColor={theme.colors.background}
             onPress={() => {}}

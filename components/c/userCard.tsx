@@ -1,9 +1,11 @@
 import { StyleSheet, View } from "react-native";
-import { useTheme } from "react-native-paper";
+import { Avatar, Button, Text, useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function UserCard() {
   const theme = useTheme();
+  const shortName = "User";
+  const initial = shortName.charAt(0).toUpperCase();
 
   return (
     <View
@@ -15,7 +17,39 @@ export default function UserCard() {
         },
       ]}
     >
-      <View style={styles.row}></View>
+      <View style={styles.row}>
+        <View style={styles.left}>
+          <Avatar.Text
+            size={wp("12%")}
+            label={initial}
+            color={theme.colors.onPrimaryContainer}
+            style={{ backgroundColor: theme.colors.primaryContainer }}
+          />
+          <View style={styles.texts}>
+            <Text
+              style={[styles.greet, { color: theme.colors.onSurfaceVariant }]}
+            >
+              How are you today,
+            </Text>
+            <Text style={[styles.name, { color: theme.colors.onSurface }]}>
+              {shortName}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.right}>
+          <Button
+            mode="contained"
+            icon="pencil"
+            onPress={() => {}}
+            buttonColor={theme.colors.background}
+            textColor={theme.colors.onBackground}
+            labelStyle={{ fontSize: wp("3.6%") }}
+          >
+            Edit Profile
+          </Button>
+        </View>
+      </View>
     </View>
   );
 }
@@ -23,10 +57,10 @@ export default function UserCard() {
 const styles = StyleSheet.create({
   card: {
     width: "100%",
-    height: wp("25%"),
     borderBottomLeftRadius: wp("4%"),
     borderBottomRightRadius: wp("4%"),
-    marginBottom: wp("3%"),
+    padding: wp("4%"),
+    paddingBottom: wp("3%"),
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
@@ -35,6 +69,28 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     gap: wp("4%"),
+  },
+  left: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: wp("4%"),
+    flex: 1,
+  },
+  texts: {
+    gap: wp("1%"),
+  },
+  greet: {
+    fontSize: wp("3.6%"),
+  },
+  name: {
+    fontSize: wp("5%"),
+    fontWeight: "700",
+    lineHeight: wp("6%"),
+  },
+  right: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
