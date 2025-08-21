@@ -103,7 +103,7 @@ export default function Home() {
           <UserCard />
           <View style={styles.body}>
             {loading ? (
-              <SkeletonLoad layout={[2, 2]} />
+              <SkeletonLoad layout={[2, 2, 2]} />
             ) : (
               <View style={styles.grid}>
                 <View style={styles.col}>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Animated, StyleSheet, View, ViewStyle } from "react-native";
+import { Animated, View, ViewStyle } from "react-native";
 import { useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
@@ -29,7 +29,6 @@ function PulsingCard({ style }: { style?: ViewStyle }) {
   return (
     <Animated.View
       style={[
-        styles.card,
         {
           backgroundColor: theme.colors.surface,
           opacity,
@@ -50,7 +49,7 @@ export default function SkeletonLoad({
   containerStyle,
   rowGap = wp("2%"),
   blockGap = wp("4%"),
-  cardHeight = wp("40%"),
+  cardHeight = wp("60%"),
   cardRadius = wp("4%"),
 }: {
   layout?: number[];
@@ -85,10 +84,3 @@ export default function SkeletonLoad({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    height: wp("40%"),
-    borderRadius: wp("4%"),
-  },
-});

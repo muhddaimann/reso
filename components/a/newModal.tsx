@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import {
   Button,
+  Chip,
   Divider,
   ProgressBar,
   TextInput,
@@ -56,6 +57,7 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
   const [answers, setAnswers] = useState<string[]>(
     Array.from({ length: QUESTIONS.length }, () => "")
   );
+  const [currentFeeling, setCurrentFeeling] = useState("");
 
   const inputRef = useRef<any>(null);
 
@@ -133,6 +135,8 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
     [answers]
   );
 
+  const feelings = answers[0].split(",").filter((f) => f.trim());
+
   if (!shouldRender) return null;
 
   return (
@@ -199,32 +203,107 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
 
             <View style={styles.phaseBody}>
               {!atLast ? (
-                <>
-                  <Text
-                    style={[styles.question, { color: theme.colors.onSurface }]}
-                  >
-                    {QUESTIONS[step]}
-                  </Text>
-                  <TextInput
-                    ref={inputRef}
-                    mode="outlined"
-                    multiline
-                    autoFocus
-                    value={answers[step]}
-                    onChangeText={(t) =>
-                      setAnswers((a) => {
-                        const c = [...a];
-                        c[step] = t;
-                        return c;
-                      })
-                    }
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                    style={{ minHeight: wp("30%") }}
-                    placeholder="Type here..."
-                    textAlignVertical="top"
-                  />
-                </>
+                step === 0 ? (
+                  <>
+                    <Text
+                      style={[
+                        styles.question,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
+                      {QUESTIONS[step]}
+                    </Text>
+                    <View
+                      style={[
+                        styles.chipsContainer,
+                        feelings.length > 0 && { paddingVertical: wp("2%") },
+                      ]}
+                    >
+                      {feelings.map((feeling, index) => (
+                        <Chip
+                          key={index}
+                          onClose={() => {
+                            const currentFeelings = answers[0].split(",");
+                            const newFeelings = currentFeelings.filter(
+                              (_, i) => i !== index
+                            );
+                            setAnswers((a) => {
+                              const c = [...a];
+                              c[0] = newFeelings.join(",");
+                              return c;
+                            });
+                          }}
+                          style={[
+                            styles.chip,
+                            {
+                              backgroundColor: theme.colors.primaryContainer,
+                            },
+                          ]}
+                        >
+                          {feeling}
+                        </Chip>
+                      ))}
+                    </View>
+                    <TextInput
+                      ref={inputRef}
+                      mode="outlined"
+                      autoFocus
+                      blurOnSubmit={false}
+                      placeholder="Type a feeling and press enter"
+                      value={currentFeeling}
+                      onChangeText={setCurrentFeeling}
+                      onSubmitEditing={() => {
+                        if (currentFeeling.trim()) {
+                          const newFeelings = [
+                            ...(answers[0]
+                              ? answers[0].split(",").filter((f) => f.trim())
+                              : []),
+                            currentFeeling.trim(),
+                          ];
+                          setAnswers((a) => {
+                            const c = [...a];
+                            c[0] = newFeelings.join(",");
+                            return c;
+                          });
+                          setCurrentFeeling("");
+                        }
+                      }}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                      style={{ marginVertical: wp("2%") }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Text
+                      style={[
+                        styles.question,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
+                      {QUESTIONS[step]}
+                    </Text>
+                    <TextInput
+                      ref={inputRef}
+                      mode="outlined"
+                      multiline
+                      autoFocus
+                      value={answers[step]}
+                      onChangeText={(t) =>
+                        setAnswers((a) => {
+                          const c = [...a];
+                          c[step] = t;
+                          return c;
+                        })
+                      }
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                      style={{ minHeight: wp("26%"), marginVertical: wp("2%") }}
+                      placeholder="Type here..."
+                      textAlignVertical="top"
+                    />
+                  </>
+                )
               ) : (
                 <>
                   <Text
@@ -286,7 +365,7 @@ export default function NewModal({ open, onDismiss, onContinue }: Props) {
               )}
             </View>
 
-            <Divider style={{ marginVertical: wp("3%") }} />
+            <Divider style={{ marginVertical: wp("2%") }} />
 
             <View style={styles.progressWrap}>
               <ProgressBar
@@ -350,7 +429,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: wp("4%"),
   },
   headerActions: {
     flexDirection: "row",
@@ -361,7 +439,15 @@ const styles = StyleSheet.create({
   },
   phaseBody: {
     justifyContent: "flex-start",
-    gap: wp("3%"),
+  },
+  chipsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: wp("1%"),
+  },
+  chip: {
+    height: wp("8%"),
+    justifyContent: "center",
   },
   pathRow: {
     flexDirection: "row",
@@ -377,7 +463,11 @@ const styles = StyleSheet.create({
   },
   progressWrap: { gap: wp("2%"), marginVertical: wp("2%") },
   stepText: { fontSize: wp("3.2%"), textAlign: "right" },
-  question: { fontSize: wp("4.5%"), fontWeight: "700", marginBottom: wp("3%") },
+  question: {
+    fontSize: wp("4.5%"),
+    fontWeight: "700",
+    paddingVertical: wp("2%"),
+  },
   actions: {
     marginTop: wp("3%"),
     flexDirection: "row",
