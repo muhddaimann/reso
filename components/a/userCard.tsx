@@ -1,3 +1,5 @@
+import { useMoodStore } from "@/contexts/api/moodStore";
+import { useMood } from "@/hooks/useMood";
 import { StyleSheet, View } from "react-native";
 import { Avatar, IconButton, Text, useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
@@ -6,6 +8,10 @@ export default function UserCard() {
   const theme = useTheme();
   const shortName = "Fakhrul";
   const initial = shortName.charAt(0).toUpperCase();
+
+  const currentMood = useMoodStore((s) => s.current);
+  const { get } = useMood();
+  const cfg = get(currentMood);
 
   return (
     <View
@@ -19,12 +25,24 @@ export default function UserCard() {
     >
       <View style={styles.row}>
         <View style={styles.left}>
-          <Avatar.Text
-            size={wp("12%")}
-            label={initial}
-            color={theme.colors.onPrimaryContainer}
-            style={{ backgroundColor: theme.colors.primaryContainer }}
-          />
+          <View>
+            <Avatar.Text
+              size={wp("12%")}
+              label={initial}
+              color={theme.colors.onPrimaryContainer}
+              style={{ backgroundColor: theme.colors.primaryContainer }}
+            />
+            <View
+              style={[
+                styles.moodDot,
+                {
+                  backgroundColor: cfg?.bg ?? theme.colors.surfaceVariant,
+                  borderColor: theme.colors.surface,
+                },
+              ]}
+            />
+          </View>
+
           <View style={styles.texts}>
             <Text
               style={[styles.greet, { color: theme.colors.onSurfaceVariant }]}
@@ -82,19 +100,17 @@ const styles = StyleSheet.create({
     gap: wp("4%"),
     flex: 1,
   },
-  texts: {
-    gap: wp("1%"),
-  },
-  greet: {
-    fontSize: wp("3.6%"),
-  },
-  name: {
-    fontSize: wp("5%"),
-    fontWeight: "700",
-    lineHeight: wp("6%"),
-  },
-  right: {
-    flexDirection: "row",
-    alignItems: "center",
+  texts: { gap: wp("1%") },
+  greet: { fontSize: wp("3.6%") },
+  name: { fontSize: wp("5%"), fontWeight: "700", lineHeight: wp("6%") },
+  right: { flexDirection: "row", alignItems: "center" },
+  moodDot: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: wp("4%"),
+    height: wp("4%"),
+    borderRadius: wp("2%"),
+    borderWidth: 2,
   },
 });

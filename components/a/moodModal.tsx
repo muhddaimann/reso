@@ -1,3 +1,4 @@
+import { useMoodStore } from "@/contexts/api/moodStore";
 import { Feeling, useMood } from "@/hooks/useMood";
 import { useToast } from "@/hooks/useToast";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -89,6 +90,7 @@ export default function MoodModal({ open, onDismiss, onPick }: Props) {
               <Pressable
                 key={f.key}
                 onPress={() => {
+                  useMoodStore.getState().setMood(f.key);
                   onPick(f.key);
                   const line =
                     f.lines[Math.floor(Math.random() * f.lines.length)];
