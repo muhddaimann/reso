@@ -1,7 +1,11 @@
 import MoodTrend from "@/components/a/a";
 import TopTrigger from "@/components/a/b";
 import RoutineSuggest from "@/components/a/c";
+import CheckDraft from "@/components/a/checkDraft";
 import QuoteSuggest from "@/components/a/d";
+import MoodCalendar from "@/components/a/moodCalendar";
+import MoodModal from "@/components/a/moodModal";
+import MoodUpdate from "@/components/a/moodUpdate";
 import NewFAB from "@/components/a/newFAB";
 import NewModal from "@/components/a/newModal";
 import UserCard from "@/components/a/userCard";
@@ -9,6 +13,7 @@ import SkeletonLoad from "@/components/skeletonLoad";
 import TopFAB from "@/components/topFAB";
 import { useTabVisibility } from "@/contexts/bottomContext";
 import { useScrollDirection } from "@/hooks/useBottomNav";
+import { Feeling } from "@/hooks/useMood";
 import { useToast } from "@/hooks/useToast";
 import { router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -34,6 +39,9 @@ export default function Home() {
   const [showNewFab] = useState(true);
   const [isNewFabExtended, setIsNewFabExtended] = useState(true);
   const [openSession, setOpenSession] = useState(false);
+
+  const [openMood, setOpenMood] = useState(false);
+  const [currentMood, setCurrentMood] = useState<Feeling | null>(null);
 
   useEffect(() => {
     if (direction === "down") setHideTabBar(true);
@@ -105,34 +113,42 @@ export default function Home() {
             {loading ? (
               <SkeletonLoad layout={[2, 2, 2]} />
             ) : (
-              <View style={styles.grid}>
-                <View style={styles.col}>
-                  <View style={styles.blockTall}>
-                    <MoodTrend />
+              <>
+                <MoodCalendar />
+                <View style={styles.grid}>
+                  <View style={styles.col}>
+                    <View style={styles.blockTall}>
+                      <MoodTrend />
+                    </View>
+                    <View style={styles.blockShort}>
+                      <CheckDraft />
+                    </View>
+                    <View style={styles.blockTall}>
+                      <TopTrigger />
+                    </View>
                   </View>
-                  <View style={styles.blockShort}>
-                    <RoutineSuggest />
-                  </View>
-                  <View style={styles.blockTall}>
-                    <MoodTrend />
+
+                  <View style={styles.col}>
+                    <View style={styles.blockShort}>
+                      <MoodUpdate
+                        onPress={() => setOpenMood(true)}
+                        currentMood={currentMood ?? undefined}
+                      />
+                    </View>
+                    <View style={styles.blockShort}>
+                      <QuoteSuggest />
+                    </View>
+                    <View style={styles.blockTall}>
+                      <RoutineSuggest />
+                    </View>
                   </View>
                 </View>
-                <View style={styles.col}>
-                  <View style={styles.blockShort}>
-                    <TopTrigger />
-                  </View>
-                  <View style={styles.blockTall}>
-                    <QuoteSuggest />
-                  </View>
-                  <View style={styles.blockShort}>
-                    <MoodTrend />
-                  </View>
-                </View>
-              </View>
+              </>
             )}
           </View>
         </View>
       </ScrollView>
+
       <TopFAB visible={showFab} scrollRef={scrollRef} />
       <NewFAB
         visible={showNewFab}
@@ -143,6 +159,16 @@ export default function Home() {
         open={openSession}
         onDismiss={() => setOpenSession(false)}
         onContinue={handleSessionContinue}
+      />
+
+      <MoodModal
+        open={openMood}
+        onDismiss={() => setOpenMood(false)}
+        onPick={(feeling) => {
+          setCurrentMood(feeling);
+          setOpenMood(false);
+          showToast({ message: `Logged: ${feeling}`, type: "info" });
+        }}
       />
     </>
   );

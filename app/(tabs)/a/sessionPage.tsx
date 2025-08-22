@@ -9,7 +9,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, Chip, Text, TextInput, useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function SessionPage() {
@@ -107,11 +107,33 @@ export default function SessionPage() {
               >
                 {q}
               </Text>
-              <Text
-                style={[styles.recapAnswer, { color: theme.colors.onSurface }]}
-              >
-                {parsedAnswers[i]?.trim() || "—"}
-              </Text>
+              {i === 0 ? (
+                <View style={styles.chipsContainer}>
+                  {parsedAnswers[i]
+                    .split(",")
+                    .filter((f) => f.trim())
+                    .map((feeling, idx) => (
+                      <Chip
+                        key={idx}
+                        style={[
+                          styles.chip,
+                          { backgroundColor: theme.colors.primaryContainer },
+                        ]}
+                      >
+                        {feeling}
+                      </Chip>
+                    ))}
+                </View>
+              ) : (
+                <Text
+                  style={[
+                    styles.recapAnswer,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
+                  {parsedAnswers[i]?.trim() || "—"}
+                </Text>
+              )}
             </View>
           ))}
         </View>
@@ -244,6 +266,16 @@ const styles = StyleSheet.create({
     fontSize: wp("4%"),
     fontWeight: "500",
     lineHeight: wp("5.5%"),
+  },
+  chipsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: wp("2%"),
+  },
+  chip: {
+    height: wp("8%"),
+    justifyContent: "center",
+    paddingHorizontal: wp("1%"),
   },
   inputLabel: {
     fontSize: wp("3.8%"),

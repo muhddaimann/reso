@@ -27,6 +27,12 @@ export default function LayoutA() {
           title: "",
         }}
       />
+      <Stack.Screen
+        name="draftPage"
+        options={{
+          title: "",
+        }}
+      />
     </Stack>
   );
 }

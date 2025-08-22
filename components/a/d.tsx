@@ -5,23 +5,21 @@ import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 export default function QuoteSuggest() {
   const theme = useTheme();
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: theme.colors.surface,
-          shadowColor: theme.colors.shadow,
-        },
-      ]}
-    >
-      <Text style={[styles.title, { color: theme.colors.onSurface }]}>
-        Quote
-      </Text>
+    <View style={styles.card}>
       <View style={styles.quoteBox}>
-        <Text style={[styles.quote, { color: theme.colors.onSurface }]}>
+        <Text style={[styles.quote, { color: theme.colors.onBackground }]}>
           “The obstacle is the way.”
         </Text>
-        <Text style={{ opacity: 0.6, marginTop: wp("2%") }}>— Marcus Aurelius</Text>
+        <Text
+          style={[
+            styles.by,
+            {
+              color: theme.colors.onPrimaryContainer,
+            },
+          ]}
+        >
+          — Marcus Aurelius
+        </Text>
       </View>
     </View>
   );
@@ -30,19 +28,16 @@ export default function QuoteSuggest() {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    borderRadius: wp("4%"),
-    padding: wp("4%"),
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 2,
+    padding: wp("2%"),
   },
-  title: { fontSize: wp("4.4%"), fontWeight: "700", marginBottom: wp("3%") },
   quoteBox: {
     flex: 1,
-    borderRadius: wp("3%"),
-    padding: wp("3%"),
     justifyContent: "center",
   },
-  quote: { fontSize: wp("5%"), fontWeight: "600", lineHeight: wp("7%") },
+  quote: { fontSize: wp("8%"), fontWeight: "600", lineHeight: wp("8%") },
+  by: {
+    fontSize: wp("4%"),
+    fontWeight: "600",
+    marginTop: wp("2%"),
+  },
 });

@@ -1,6 +1,11 @@
 import { createContext, useContext, useState } from "react";
 
-type Toast = { message: string; type?: "success" | "error" | "info" };
+type Toast = {
+  message: string;
+  type?: "success" | "error" | "info" | "custom";
+  bg?: string;
+  fg?: string;
+};
 
 const ToastContext = createContext<{
   showToast: (toast: Toast) => void;

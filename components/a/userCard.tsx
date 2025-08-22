@@ -4,7 +4,7 @@ import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function UserCard() {
   const theme = useTheme();
-  const shortName = "User";
+  const shortName = "Fakhrul";
   const initial = shortName.charAt(0).toUpperCase();
 
   return (
@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     width: "100%",
     borderBottomLeftRadius: wp("4%"),
     borderBottomRightRadius: wp("4%"),
-    marginBottom: wp("3%"),
     padding: wp("4%"),
     paddingBottom: wp("3%"),
     shadowOffset: { width: 0, height: 2 },

@@ -73,7 +73,7 @@ export default function NewFAB({ visible, extended, onPress }: NewFABProps) {
       pointerEvents={visible ? "auto" : "none"}
       style={[
         styles.container,
-        { bottom: insets.bottom + wp("20%"), right: wp("4%"), opacity: show },
+        { bottom: insets.bottom + wp("18%"), right: wp("4%"), opacity: show },
       ]}
     >
       <Pressable onPress={onPress} style={{ borderRadius: RADIUS }}>

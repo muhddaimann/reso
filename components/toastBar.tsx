@@ -86,7 +86,12 @@ export default function ToastBar() {
     },
   } as const;
 
-  const current = (palette as any)[type] ?? palette.custom;
+  const base = (palette as any)[type] ?? palette.custom;
+
+  const current = {
+    bg: toast.bg ?? base.bg,
+    fg: toast.fg ?? base.fg,
+  };
 
   const iconName =
     type === "success"
