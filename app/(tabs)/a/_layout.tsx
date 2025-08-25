@@ -33,6 +33,12 @@ export default function LayoutA() {
           title: "",
         }}
       />
+      <Stack.Screen
+        name="progressPage"
+        options={{
+          title: "",
+        }}
+      />
     </Stack>
   );
 }

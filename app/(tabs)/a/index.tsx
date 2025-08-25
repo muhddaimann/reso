@@ -8,6 +8,7 @@ import MoodModal from "@/components/a/moodModal";
 import MoodUpdate from "@/components/a/moodUpdate";
 import NewFAB from "@/components/a/newFAB";
 import NewModal from "@/components/a/newModal";
+import ProgressCard from "@/components/a/progressCard";
 import UserCard from "@/components/a/userCard";
 import SkeletonLoad from "@/components/skeletonLoad";
 import TopFAB from "@/components/topFAB";
@@ -111,7 +112,7 @@ export default function Home() {
           <UserCard />
           <View style={styles.body}>
             {loading ? (
-              <SkeletonLoad layout={[2, 2, 2]} />
+              <SkeletonLoad layout={[1, 2, 2, 2]} />
             ) : (
               <>
                 <MoodCalendar />
@@ -120,26 +121,29 @@ export default function Home() {
                     <View style={styles.blockTall}>
                       <MoodTrend />
                     </View>
+                    <View style={styles.blockTall}>
+                      <QuoteSuggest />
+                    </View>
                     <View style={styles.blockShort}>
                       <CheckDraft />
                     </View>
-                    <View style={styles.blockTall}>
-                      <TopTrigger />
+                    <View style={styles.blockShort}>
+                      <RoutineSuggest />
                     </View>
                   </View>
 
                   <View style={styles.col}>
-                    <View style={styles.blockShort}>
+                    <View style={styles.blockTall}>
                       <MoodUpdate
                         onPress={() => setOpenMood(true)}
                         currentMood={currentMood ?? undefined}
                       />
                     </View>
                     <View style={styles.blockShort}>
-                      <QuoteSuggest />
+                      <ProgressCard />
                     </View>
-                    <View style={styles.blockTall}>
-                      <RoutineSuggest />
+                    <View style={styles.blockShort}>
+                      <TopTrigger />
                     </View>
                   </View>
                 </View>
@@ -190,6 +194,11 @@ const styles = StyleSheet.create({
   },
   blockShort: {
     height: wp("50%"),
+    borderRadius: wp("4%"),
+    overflow: "hidden",
+  },
+  blockSmall: {
+    height: wp("10%"),
     borderRadius: wp("4%"),
     overflow: "hidden",
   },

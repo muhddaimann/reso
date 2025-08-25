@@ -1,12 +1,15 @@
+import { useMood } from "@/hooks/useMood";
 import { StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function MoodCalendar() {
   const theme = useTheme();
+  const { list } = useMood();
+
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const intensities = [1, 3, 2, 4, 5, 2, 1];
-
+``
   const today = new Date();
   const jsDay = today.getDay();
   const mondayIndex = (jsDay + 6) % 7;
@@ -24,13 +27,34 @@ export default function MoodCalendar() {
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
 
+  const seededRand = (seed: number) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  };
+
+  const moodBGs = list.map((m) => m.bg);
+  const neutral = theme.colors.surfaceVariant;
+
   return (
     <View style={styles.card}>
       <View style={styles.weekRow}>
         {days.map((d, i) => {
           const dateObj = weekDates[i];
           const isToday = isSameDate(dateObj, today);
+          const isPastOrToday =
+            dateObj <=
+            new Date(today.getFullYear(), today.getMonth(), today.getDate());
           const opacity = 0.25 + intensities[i] * 0.12;
+
+          const seed = Math.floor(startOfWeek.getTime() / 86400000) + i;
+          const randIdx =
+            moodBGs.length > 0
+              ? Math.floor(seededRand(seed) * moodBGs.length)
+              : 0;
+
+          const dotColor = isPastOrToday
+            ? (moodBGs[randIdx] ?? neutral)
+            : neutral;
 
           return (
             <View key={`${d}-${i}`} style={styles.day}>
@@ -72,8 +96,8 @@ export default function MoodCalendar() {
                 style={[
                   styles.dot,
                   {
-                    backgroundColor: theme.colors.primary,
-                    opacity,
+                    backgroundColor: dotColor,
+                    opacity: isPastOrToday ? opacity : 1,
                   },
                 ]}
               />
@@ -123,6 +147,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   dot: {
+    marginTop: wp("1%"),
     width: DOT_SIZE,
     height: DOT_SIZE,
     borderRadius: DOT_SIZE / 2,
